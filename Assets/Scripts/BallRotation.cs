@@ -20,16 +20,13 @@ public class BallRotation : MonoBehaviour
 	{
 	
 	}
-
+	
 	void FixedUpdate()
 	{
 		rotateBall();
-
 		lastPosition = transform.position;
 	}
-
-
-
+	
 	/// <summary>
 	/// Rotate the 3d mesh with quaternions!
 	/// </summary>
@@ -47,19 +44,51 @@ public class BallRotation : MonoBehaviour
 			lastPosition.y, 
 			lastPosition.z + radius); // the bottom of the ball last update
 
-		// direction Vectors that appriximate how much the ball rotated
-		// "good enough" for small movements between frames
+		// direction Vectors
 		Vector3 ballDown = currentBottom - currentPosition;
 		Vector3 ballRotated = lastBottom - currentPosition;
 
+/*
+		// faster (but less accurate) rotation approximation
 		// store the rotation change in a Quaternion
-		Quaternion q = Quaternion.FromToRotation(ballDown, ballRotated); // that was easy!
+		Quaternion qSimple = Quaternion.FromToRotation(ballDown, ballRotated);
+		
+		// apply rotation to the transform
+		// qSimple must come first in multiplication order!!!
+		transform.rotation = qSimple * transform.rotation;
+		return;
+*/
+
+		// segment length that the ball rotated
+		Vector3 distance = currentBottom - lastBottom;
+		float segment = distance.magnitude;
+
+		if (segment == 0 || radius == 0) 
+		{
+			// nothing to do
+			return;
+		}
+
+		// to build a Quaternion to hold the desired rotation, 
+		// we need a Vector3 "axis" and an angle "theta"
+
+		// arc length formula
+		// s = r * theta
+		// theta = s / r
+		// http://www.mathopenref.com/arclength.html
+		float theta = segment / radius; // in radians
+		float thetaDegrees = theta * 180 / Mathf.PI;
+
+
+		// use Cross Product to find an axis of rotation 
+		Vector3 axis = Vector3.Cross(ballDown, ballRotated);
+
+		// the axis and angle is enough to make a rotation Quaternion!
+		Quaternion q = Quaternion.AngleAxis(thetaDegrees, axis);
 
 		// apply rotation to the transform
-		Quaternion newRotation = q * transform.rotation; // q must come first in multiplication order!!!
-		transform.rotation = newRotation;
-
-
+		// q must come first in multiplication order!!!
+		transform.rotation = q * transform.rotation;
 	}
 
 }
