@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class BallInput : MonoBehaviour 
@@ -31,7 +32,15 @@ public class BallInput : MonoBehaviour
 	private void pushBall()
 	{
 		Vector2 force = Vector2.zero;
-		
+
+		/*
+		foreach(KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
+		{
+			if (Input.GetKeyDown(kcode))
+				Debug.Log("KeyCode down: " + kcode);
+		}
+        */
+
 		if (Input.GetKey (KeyCode.LeftArrow)) 
 		{
 			force.x -= acceleration;
@@ -48,7 +57,9 @@ public class BallInput : MonoBehaviour
 		{
 			force.y -= acceleration;
 		}
-		
+
+		//Debug.Log ("force " + force);
+
 		// apply force
 		rigidBody2D.AddForce (force);
 	}

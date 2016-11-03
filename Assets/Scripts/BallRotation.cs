@@ -12,6 +12,7 @@ public class BallRotation : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		GetComponent<Rigidbody2D> ().constraints = RigidbodyConstraints2D.FreezeRotation;	
 		lastPosition = transform.position;
 	}
 	
